@@ -67,7 +67,7 @@ void Polygon::updateMinMaxCoords(const Position& vertex) {
   if (vertex.x() > maxCoord_.x()) maxCoord_.x() = vertex.x();
   if (vertex.y() > maxCoord_.y()) maxCoord_.y() = vertex.y();
   if (vertex.x() < minCoord_.x()) minCoord_.x() = vertex.x();
-  if (vertex.y() > minCoord_.y()) minCoord_.y() = vertex.y();
+  if (vertex.y() < minCoord_.y()) minCoord_.y() = vertex.y();
 }
 
 void Polygon::resetMinMaxCoords() {
