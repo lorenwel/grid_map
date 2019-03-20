@@ -203,7 +203,17 @@ class Polygon
    */
   static Polygon convexHull(Polygon& polygon1, Polygon& polygon2);
 
- protected:
+  /*!
+   * Gets the maximum x and y coordinates of vertices.
+   * \return Maximum coordinates of vertices.
+   */
+  inline Position getMaxCoords() const;
+
+  /*!
+   * Gets the minimum x and y coordinates of vertices.
+   * \return Minimum coordinates of vertices.
+   */
+  inline Position getMinCoords() const;
 
   /*!
    * Returns true if the vector1 and vector2 are sorted lexicographically.
@@ -212,6 +222,8 @@ class Polygon
    */
   static bool sortVertices(const Eigen::Vector2d& vector1,
                            const Eigen::Vector2d& vector2);
+
+ protected:
 
   /*!
    * Returns the 2D cross product of vector1 and vector2.
@@ -243,9 +255,9 @@ class Polygon
 
   //! Helper variables for speeding up isInside() computation.
   //! Maximum x and y values of polygon bounding box.
-  Position maxCoord_;
+  Position maxCoords_;
   //! Minimum x and y values of polygon bounding box.
-  Position minCoord_;
+  Position minCoords_;
 
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW

@@ -34,10 +34,10 @@ Polygon::~Polygon() {}
 bool Polygon::isInside(const Position& point) const
 {
   // Check bounding box of polygon first.
-  if (point.x() < minCoord_.x()) return false;
-  else if (point.x() > maxCoord_.x()) return false;
-  else if (point.y() < minCoord_.y()) return false;
-  else if (point.y() > maxCoord_.y()) return false;
+  if (point.x() < minCoords_.x()) return false;
+  else if (point.x() > maxCoords_.x()) return false;
+  else if (point.y() < minCoords_.y()) return false;
+  else if (point.y() > maxCoords_.y()) return false;
 
   // Do exact polygon check.
   int cross = 0;
@@ -64,15 +64,15 @@ const Position& Polygon::getVertex(const size_t index) const
 }
 
 void Polygon::updateMinMaxCoords(const Position& vertex) {
-  if (vertex.x() > maxCoord_.x()) maxCoord_.x() = vertex.x();
-  if (vertex.y() > maxCoord_.y()) maxCoord_.y() = vertex.y();
-  if (vertex.x() < minCoord_.x()) minCoord_.x() = vertex.x();
-  if (vertex.y() < minCoord_.y()) minCoord_.y() = vertex.y();
+  if (vertex.x() > maxCoords_.x()) maxCoords_.x() = vertex.x();
+  if (vertex.y() > maxCoords_.y()) maxCoords_.y() = vertex.y();
+  if (vertex.x() < minCoords_.x()) minCoords_.x() = vertex.x();
+  if (vertex.y() < minCoords_.y()) minCoords_.y() = vertex.y();
 }
 
 void Polygon::resetMinMaxCoords() {
-  minCoord_.setConstant(std::numeric_limits<Position::Scalar>::max());
-  maxCoord_.setConstant(-std::numeric_limits<Position::Scalar>::max());
+  minCoords_.setConstant(std::numeric_limits<Position::Scalar>::max());
+  maxCoords_.setConstant(std::numeric_limits<Position::Scalar>::lowest());
 }
 
 void Polygon::removeVertices()
@@ -342,6 +342,16 @@ Polygon Polygon::convexHull(Polygon& polygon1, Polygon& polygon2)
 
   Polygon polygon(hull);
   return polygon;
+}
+
+inline Position Polygon::getMaxCoords() const
+{
+  return maxCoords_;
+}
+
+inline Position Polygon::getMinCoords() const
+{
+  return minCoords_;
 }
 
 bool Polygon::sortVertices(const Eigen::Vector2d& vector1,

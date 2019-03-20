@@ -13,6 +13,7 @@
 #include "grid_map_core/iterators/SubmapIterator.hpp"
 
 #include <memory>
+#include <list>
 
 namespace grid_map {
 
@@ -63,6 +64,32 @@ public:
 
 private:
 
+  //! Struct which holds all data for the scanline algorithm.
+  struct Edge {
+    double xMin;
+    double xMax;
+    double yHit;
+    double mInv;
+  };
+
+  //! List of edges sorted by yHit.
+  class SortedEdgeList : public std::list<Edge> {
+
+    static bool edgeComp(const Edge& edge1, const Edge& edge2) {
+      return edge1.yHit > edge2.yHit;
+    }
+
+   public:
+
+//    void sortedInsert(const Edge& edge) {
+//      insert(std::lower_bound(begin(), end(), edge, edgeComp), edge);
+//    }
+
+    void sortedInsert(Edge&& edge) {
+      insert(std::lower_bound(begin(), end(), edge, edgeComp), std::move(edge));
+    }
+  };
+
   /*!
    * Check if current index is inside polygon.
    * @return true if inside, false otherwise.
@@ -77,6 +104,18 @@ private:
    */
   void findSubmapParameters(const grid_map::Polygon& polygon, Index& startIndex,Size& bufferSize) const;
 
+  void buildEdgeTables();
+
+  void updateActiveEdges();
+
+  void updateIndex();
+
+  void updatePosition();
+
+  void updateIndexAndPosition();
+
+  bool incrementInternalIterator();
+
   //! Polygon to iterate on.
   grid_map::Polygon polygon_;
 
@@ -89,6 +128,16 @@ private:
   double resolution_;
   Size bufferSize_;
   Index bufferStartIndex_;
+
+  //! Scanline algorithm variables.
+  std::list<Edge> edgeTable_;
+  SortedEdgeList activeEdgeTable_;
+  Index curIndex_;
+  Position curPosition_;
+  double curLineX_{std::numeric_limits<double>::max()};
+  bool unevenEdgeHits_{false};
+  SortedEdgeList::iterator curActiveEdgeIter_;
+
 
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
