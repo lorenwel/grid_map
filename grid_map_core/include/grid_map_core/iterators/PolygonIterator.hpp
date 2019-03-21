@@ -29,14 +29,7 @@ public:
    * @param gridMap the grid map to iterate on.
    * @param polygon the polygonal area to iterate on.
    */
-  PolygonIterator(const grid_map::GridMap& gridMap, const grid_map::Polygon& polygon);
-
-  /*!
-   * Assignment operator.
-   * @param iterator the iterator to copy data from.
-   * @return a reference to *this.
-   */
-  PolygonIterator& operator =(const PolygonIterator& other);
+  PolygonIterator(grid_map::GridMap& gridMap, const grid_map::Polygon& polygon);
 
   /*!
    * Compare to another iterator.
@@ -48,7 +41,7 @@ public:
    * Dereference the iterator with const.
    * @return the value to which the iterator is pointing.
    */
-  const Index& operator *() const;
+  const Index &operator *() const;
 
   /*!
    * Increase the iterator to the next element.
@@ -60,9 +53,19 @@ public:
    * Indicates if iterator is past end.
    * @return true if iterator is out of scope, false if end has not been reached.
    */
-  bool isPastEnd() const;
+  inline bool isPastEnd() const
+  {
+    return isPastEnd_;
+  }
 
 private:
+
+  inline bool checkPastEnd() {
+    if (curInd_.x() == maxInd_.x()) {
+      isPastEnd_ = true;
+    }
+    return isPastEnd_;
+  }
 
   //! Struct which holds all data for the scanline algorithm.
   struct Edge {
@@ -76,7 +79,7 @@ private:
   class SortedEdgeList : public std::list<Edge> {
 
     static bool edgeComp(const Edge& edge1, const Edge& edge2) {
-      return edge1.yHit > edge2.yHit;
+      return edge1.yHit < edge2.yHit;
     }
 
    public:
@@ -90,37 +93,26 @@ private:
     }
   };
 
-  /*!
-   * Check if current index is inside polygon.
-   * @return true if inside, false otherwise.
-   */
-  bool isInside() const;
-
-  /*!
-   * Finds the submap that fully contains the polygon and returns the parameters.
-   * @param[in] polygon the polygon to get the submap for.
-   * @param[out] startIndex the start index of the submap.
-   * @param[out] bufferSize the buffer size of the submap.
-   */
-  void findSubmapParameters(const grid_map::Polygon& polygon, Index& startIndex,Size& bufferSize) const;
-
   void buildEdgeTables();
 
   void updateActiveEdges();
 
-  void updateIndex();
+  void incrementIndices();
 
-  void updatePosition();
+  void iterateUntilInside();
 
-  void updateIndexAndPosition();
+  void convertVerticesToIndexSpace();
 
-  bool incrementInternalIterator();
+  inline Position convertPositionToIndexSpace(const Position& position);
 
   //! Polygon to iterate on.
-  grid_map::Polygon polygon_;
+  std::vector<grid_map::Position> polygon_;
 
-  //! Grid submap iterator.
-  std::shared_ptr<SubmapIterator> internalIterator_;
+  //! Grid iterator index.
+  Index curInd_{Index::Constant(0)};
+  Index minInd_;
+  Index maxInd_;
+  bool isPastEnd_{false};
 
   //! Map information needed to get position from iterator.
   Length mapLength_;
@@ -132,9 +124,7 @@ private:
   //! Scanline algorithm variables.
   std::list<Edge> edgeTable_;
   SortedEdgeList activeEdgeTable_;
-  Index curIndex_;
-  Position curPosition_;
-  double curLineX_{std::numeric_limits<double>::max()};
+  int curLineX_{std::numeric_limits<int>::lowest()};
   bool unevenEdgeHits_{false};
   SortedEdgeList::iterator curActiveEdgeIter_;
 

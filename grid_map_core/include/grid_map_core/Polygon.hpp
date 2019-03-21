@@ -207,13 +207,13 @@ class Polygon
    * Gets the maximum x and y coordinates of vertices.
    * \return Maximum coordinates of vertices.
    */
-  inline Position getMaxCoords() const;
+  const Position &getMaxCoords() const;
 
   /*!
    * Gets the minimum x and y coordinates of vertices.
    * \return Minimum coordinates of vertices.
    */
-  inline Position getMinCoords() const;
+  const Position& getMinCoords() const;
 
   /*!
    * Returns true if the vector1 and vector2 are sorted lexicographically.

@@ -344,12 +344,12 @@ Polygon Polygon::convexHull(Polygon& polygon1, Polygon& polygon2)
   return polygon;
 }
 
-inline Position Polygon::getMaxCoords() const
+const Position& Polygon::getMaxCoords() const
 {
   return maxCoords_;
 }
 
-inline Position Polygon::getMinCoords() const
+const Position& Polygon::getMinCoords() const
 {
   return minCoords_;
 }
